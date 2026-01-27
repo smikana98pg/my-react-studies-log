@@ -1,11 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./Input";
+import { getAllStudies } from "../utils/supabaseFunction";
 
 export const App = () => {
   const [title, setTitle] = useState("");
   const [time, setTime] = useState(0);
   const [isInput, setIsInput] = useState(true);
   const [records, setRecords] = useState([]);
+
+  useEffect(() => {
+    const getStudies = async () => {
+      const studies = await getAllStudies();
+      setRecords(studies.data);
+    };
+    getStudies();
+  }, []);
 
   const onTitleChange = (e) => {
     setTitle(e.target.value);
