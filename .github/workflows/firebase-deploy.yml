@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. コードを取得
+      # 1. コード取得
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Node.js をセットアップ
+      # 2. Node.js セットアップ
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -32,17 +32,15 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 5. Google Cloud 認証
+      # 5. Google Cloud 認証（Workload Identity Federation）
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: projects/379411075273/locations/global/workloadIdentityPools/github-pool/providers/github
           service_account: github-actions-firebase@studies-log-react-app.iam.gserviceaccount.com
-          token_format: "json"
-          credentials_file: ${{ runner.workspace }}/gha-creds.json
+          create_credentials_file: true
+          export_environment_variables: true
 
       # 6. Firebase デプロイ
       - name: Deploy to Firebase Hosting
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.workspace }}/gha-creds.json
         run: npx firebase-tools deploy --only hosting
