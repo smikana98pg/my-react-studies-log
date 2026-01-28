@@ -3,7 +3,7 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - main
+      - main  # main に push したら自動デプロイ
 
 permissions:
   id-token: write
@@ -14,28 +14,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      # 1. コードを取得
+      - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Node.js をセットアップ
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      # 3. 依存関係インストール
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      # 4. ビルド
+      - name: Build project
         run: npm run build
 
+      # 5. Google Cloud 認証
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: projects/379411075273/locations/global/workloadIdentityPools/github-pool/providers/github
           service_account: github-actions-firebase@studies-log-react-app.iam.gserviceaccount.com
+          token_format: "json"
+          credentials_file: ${{ runner.workspace }}/gha-creds.json
 
-      - name: Deploy to Firebase
+      # 6. Firebase デプロイ
+      - name: Deploy to Firebase Hosting
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.workspace }}/gha-creds-73d8df4b2d652555.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.workspace }}/gha-creds.json
         run: npx firebase-tools deploy --only hosting
-
