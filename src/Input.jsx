@@ -4,11 +4,11 @@ export const Input = (props) => {
     <>
       <p>
         学習内容
-        <input type="text" onChange={onTitleChange} value={title} />
+        <input type="text" onChange={onTitleChange} value={title} placeholder="学習内容" />
       </p>
       <p>
         学習時間
-        <input type="number" onChange={onTimeChange} value={time} />
+        <input type="number" onChange={onTimeChange} value={time} placeholder="学習時間"/>
       </p>
       <p>
         入力されている学習内容：<span>{title}</span>
